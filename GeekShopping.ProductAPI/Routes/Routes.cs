@@ -24,7 +24,7 @@ namespace GeekShopping.ProductAPI.Routes
             }).RequireAuthorization();
 
             app.MapGet($"{BaseRoute}/get", async ([FromServices] IProductRepository repository) =>
-                Results.Ok(await repository.FindAll())).RequireAuthorization();
+                Results.Ok(await repository.FindAll()));
 
             app.MapPost($"{BaseRoute}/save", async ([FromBody] ProductVO product, [FromServices] IProductRepository repository) =>
                 Results.Ok(await repository.Create(product))).RequireAuthorization();
