@@ -1,0 +1,47 @@
+POST http://localhost:5000/api/v1/product/save HTTP/1.1
+content-type: application/json
+
+{
+    "id": 1,
+    "name": "TestProduct",
+    "price": 50.0,    
+    "description": "Test description",
+    "categoryName": "Test category",
+    "imageUrl": "Test url"
+}
+
+###
+POST http://localhost:5000/api/v1/product/save HTTP/1.1
+content-type: application/json
+
+{
+    "id": 2,
+    "name": "TestProduct2",
+    "price": 50.0,    
+    "description": "Test description2",
+    "categoryName": "Test category2",
+    "imageUrl": "Test url2"
+}
+
+###
+
+GET http://localhost:5000/api/v1/product/get HTTP/1.1
+
+###
+GET http://localhost:5000/api/v1/product/get/2 HTTP/1.1
+
+###
+DELETE http://localhost:5000/api/v1/product/delete/2 HTTP/1.1
+
+###
+PUT http://localhost:5000/api/v1/product/update HTTP/1.1
+content-type: application/json
+
+{
+    "id": 1,
+    "name": "TestProduct",
+    "price": 80.0,    
+    "description": "Test description",
+    "categoryName": "Test category",
+    "imageUrl": "Test url"
+}
