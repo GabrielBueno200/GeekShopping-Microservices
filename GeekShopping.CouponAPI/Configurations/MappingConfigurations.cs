@@ -7,6 +7,6 @@ namespace GeekShopping.CouponAPI.Configurations;
 public class MappingConfigurations
 {
     public static MapperConfiguration RegisterMaps() => new MapperConfiguration(configuration => {
-        configuration.CreateMap<Product, ProductVO>().ReverseMap();
+        configuration.CreateMap<Coupon, CouponVO>().ReverseMap();
     });
 }
