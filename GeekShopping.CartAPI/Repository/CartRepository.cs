@@ -5,6 +5,7 @@ using AutoMapper;
 using GeekShopping.CartAPI.Model;
 using GeekShopping.CartAPI.Model.Context;
 using GeekShopping.CartAPI.Repository;
+using GeekShopping.CartAPI.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace GeekShopping.CartAPI;

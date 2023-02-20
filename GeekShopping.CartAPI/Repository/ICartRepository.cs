@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using GeekShopping.CartAPI.Model;
+using GeekShopping.CartAPI.ValueObjects;
 
 namespace GeekShopping.CartAPI.Repository;
 

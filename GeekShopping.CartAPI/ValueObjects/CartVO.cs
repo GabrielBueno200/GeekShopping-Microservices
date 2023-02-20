@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace GeekShopping.CartAPI.Model;
+namespace GeekShopping.CartAPI.ValueObjects;
 
 public class CartVO
 {

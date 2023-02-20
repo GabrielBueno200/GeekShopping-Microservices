@@ -2,8 +2,7 @@ using GeekShopping.CartAPI.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using GeekShopping.CartAPI.Repository;
-using GeekShopping.CartAPI.Model;
+using GeekShopping.CartAPI.ValueObjects;
 
 namespace GeekShopping.CartAPI.Routes
 {

@@ -1,4 +1,4 @@
-namespace GeekShopping.CartAPI.Model;
+namespace GeekShopping.CartAPI.ValueObjects;
 
 public class CartDetailVO
 {

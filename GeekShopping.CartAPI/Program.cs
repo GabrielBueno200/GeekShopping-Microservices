@@ -1,6 +1,6 @@
 using System.Reflection;
 using GeekShopping.CartAPI.Model.Context;
-using GeekShopping.ProductAPI.Configurations;
+using GeekShopping.CartAPI.Configurations;
 using GeekShopping.CartAPI.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
