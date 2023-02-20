@@ -32,7 +32,7 @@ public class ProductController : Controller
 
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> ProductUpdate(ProductModel model)
+    public async Task<IActionResult> ProductUpdate(ProductViewModel model)
     {
         if (ModelState.IsValid)
         {
@@ -55,7 +55,7 @@ public class ProductController : Controller
 
     [HttpPost]
     [Authorize(Roles = Role.Admin)]
-    public async Task<IActionResult> ProductDelete(ProductModel model)
+    public async Task<IActionResult> ProductDelete(ProductViewModel model)
     {
         var response = await _productService.DeleteProductById(model.Id);
         if (response) return RedirectToAction(nameof(ProductIndex));
@@ -69,7 +69,7 @@ public class ProductController : Controller
 
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> ProductCreate(ProductModel model)
+    public async Task<IActionResult> ProductCreate(ProductViewModel model)
     {
         if (ModelState.IsValid)
         {

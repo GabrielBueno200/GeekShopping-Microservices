@@ -3,6 +3,7 @@ version: '3.8'
 volumes:
   productsData:
   identityServerData:
+  cartData:
 
 networks:
   geekshopping:
@@ -24,6 +25,14 @@ services:
     networks:
       - geekshopping
 
+  geekshopping_cart_api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    ports:
+      - 5003:80
+    networks:
+      - geekshopping
+  
   geekshopping_web_frontend:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
@@ -37,6 +46,17 @@ services:
       - productsData:/var/lib/mysql
     ports:
       - '3306:3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=lalala
+      - bind-address=0.0.0.0
+    networks:
+      - geekshopping
+
+  cart_db:
+    volumes:
+      - cartData:/var/lib/mysql
+    ports:
+      - '3308:3306'
     environment:
       - MYSQL_ROOT_PASSWORD=lalala
       - bind-address=0.0.0.0

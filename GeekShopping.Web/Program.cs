@@ -1,5 +1,4 @@
 using System.Net.Http.Headers;
-using System.Buffers;
 using System;
 using GeekShopping.Web.Services;
 using GeekShopping.Web.Services.Interfaces;
@@ -7,6 +6,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using GeekShopping.Web.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,15 +34,15 @@ builder.Services.AddAuthentication(options => {
     });
 
 builder.Services.AddHttpContextAccessor();
-var httpContextAccessor = builder.Services.BuildServiceProvider().GetRequiredService<IHttpContextAccessor>();
+// !
 
-builder.Services.AddHttpClient<IProductService, ProductService>(client => {
-    client.BaseAddress = new Uri(builder.Configuration["ServicesUrls:ProductApi"]!);
+builder.Services.AddSignedHttpClient<IProductService, ProductService>(
+    baseUrl: builder.Configuration["ServicesUrls:ProductApi"]
+);
 
-    var token = httpContextAccessor.HttpContext?.GetTokenAsync("access_token").GetAwaiter().GetResult();
-    if (!string.IsNullOrEmpty(token))
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-});
+builder.Services.AddSignedHttpClient<ICartService, CartService>(
+    baseUrl: builder.Configuration["ServicesUrls:CartApi"]
+);
 
 var app = builder.Build();
 

@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;

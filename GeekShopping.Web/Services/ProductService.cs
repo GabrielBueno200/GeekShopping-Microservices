@@ -19,11 +19,11 @@ public class ProductService : IProductService
 
     private const string BaseUrl =  "api/v1/product";
 
-    public async Task<ProductModel> CreateProduct(ProductModel productModel)
+    public async Task<ProductViewModel> CreateProduct(ProductViewModel productModel)
     {
         var response = await _client.PostAsJson($"{BaseUrl}/save", productModel);
         if (response.IsSuccessStatusCode)
-            return await response.ReadContentAs<ProductModel>();
+            return await response.ReadContentAs<ProductViewModel>();
         else throw new Exception("Something went wrong when calling API");
     }
 
@@ -33,23 +33,23 @@ public class ProductService : IProductService
         return await response.ReadContentAs<bool>();
     }
 
-    public async Task<IEnumerable<ProductModel>> FindAllProducts()
+    public async Task<IEnumerable<ProductViewModel>> FindAllProducts()
     {
         var response = await _client.GetAsync($"{BaseUrl}/get");
-        return await response.ReadContentAs<IList<ProductModel>>();
+        return await response.ReadContentAs<IList<ProductViewModel>>();
     }
 
-    public async Task<ProductModel> FindProductById(long id)
+    public async Task<ProductViewModel> FindProductById(long id)
     {
         var response = await _client.GetAsync($"{BaseUrl}/get/{id}");
-        return await response.ReadContentAs<ProductModel>();
+        return await response.ReadContentAs<ProductViewModel>();
     }
 
-    public async Task<ProductModel> UpdateProduct(ProductModel productModel)
+    public async Task<ProductViewModel> UpdateProduct(ProductViewModel productModel)
     {
         var response = await _client.PutAsJson($"{BaseUrl}/update", productModel);
         if (response.IsSuccessStatusCode)
-            return await response.ReadContentAs<ProductModel>();
+            return await response.ReadContentAs<ProductViewModel>();
         else throw new Exception("Something went wrong when calling API");
     }
 }
