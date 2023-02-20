@@ -33,7 +33,7 @@ public class CartController : BaseController
         var response = await _cartService.ApplyCoupon(cartViewModel);
 
         if (response) return RedirectToAction(nameof(CartIndex));
-        
+
         return View();
     }
 
@@ -49,6 +49,22 @@ public class CartController : BaseController
         }
         return View();
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Checkout() => View(await FindUserCart());
+
+    [HttpPost]
+    public async Task<IActionResult> Checkout(CartViewModel cartViewModel)
+    {
+        var response = await _cartService.Checkout(cartViewModel.CartHeader);
+
+        if (response is not null) return RedirectToAction(nameof(Confirmation));
+
+        return View(cartViewModel);
+    }
+
+    [HttpGet]
+    public IActionResult Confirmation() => View();
 
     public async Task<IActionResult> Remove(int id)
     {

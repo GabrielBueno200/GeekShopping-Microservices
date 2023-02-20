@@ -34,9 +34,12 @@ public class CartService : ICartService
         else throw new Exception("Something went wrong when calling API");
     }
 
-    public async Task<CartViewModel> Checkout(CartHeaderViewModel cartHeader)
+    public async Task<CartHeaderViewModel> Checkout(CartHeaderViewModel cartHeaderViewModel)
     {
-        throw new System.NotImplementedException();
+        var response = await _client.PostAsJson($"{BaseUrl}/checkout", cartHeaderViewModel);
+        if (response.IsSuccessStatusCode)
+            return await response.ReadContentAs<CartHeaderViewModel>();
+        else throw new Exception("Something went wrong when calling API");
     }
 
     public async Task<bool> ClearCart(string userId)

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using GeekShopping.CartAPI.ValueObjects;
+using GeekShopping.CartAPI.Messages;
 
 namespace GeekShopping.CartAPI.Routes
 {
@@ -72,6 +73,22 @@ namespace GeekShopping.CartAPI.Routes
                 
                 if (!status) return Results.NotFound();
                 return Results.Ok(status);
+            });
+
+            app.MapPost($"{BaseRoute}/checkout", async (
+                [FromBody] CheckoutHeaderVO checkoutHeaderVo, 
+                [FromServices] ICartRepository repository
+            ) =>
+            {
+                var cart = await repository.FindCartByUserId(checkoutHeaderVo.UserId);
+                if (cart is null) return Results.NotFound();
+                
+                checkoutHeaderVo.CartDetails = cart.CartDetails;
+                checkoutHeaderVo.Time = DateTime.Now;
+
+                // RabbitMQ logic
+
+                return Results.Ok(checkoutHeaderVo);
             });
         }
     }
