@@ -44,6 +44,10 @@ builder.Services.AddSignedHttpClient<ICartService, CartService>(
     baseUrl: builder.Configuration["ServicesUrls:CartApi"]
 );
 
+builder.Services.AddSignedHttpClient<ICouponService, CouponService>(
+    baseUrl: builder.Configuration["ServicesUrls:CouponApi"]
+);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
