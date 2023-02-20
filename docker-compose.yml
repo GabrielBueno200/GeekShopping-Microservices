@@ -7,7 +7,6 @@ services:
       context: ./GeekShopping.IdentityServer
       dockerfile: Dockerfile
     depends_on:
-      - geekshopping_products_api
       - geekshopping_web_frontend
 
   geekshopping_products_api:
@@ -17,15 +16,26 @@ services:
     depends_on:
       - products_db
 
+  geekshopping_cart_api:
+    build:
+      context: ./GeekShopping.CartAPI
+      dockerfile: Dockerfile
+    depends_on:
+      - cart_db
+
   geekshopping_web_frontend:
     build:
       context: ./GeekShopping.Web
       dockerfile: Dockerfile
     depends_on:
       - geekshopping_products_api
+      - geekshopping_cart_api
 
   products_db:
     image: "mysql:latest"
 
+  cart_db:
+    image: "mysql:latest"
+    
   identity_server_db:
     image: "mysql:latest"
