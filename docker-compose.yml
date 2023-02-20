@@ -23,6 +23,13 @@ services:
     depends_on:
       - cart_db
 
+  geekshopping_coupon_api:
+    build:
+      context: ./GeekShopping.CouponAPI
+      dockerfile: Dockerfile
+    depends_on:
+      - coupon_db
+
   geekshopping_web_frontend:
     build:
       context: ./GeekShopping.Web
@@ -37,5 +44,8 @@ services:
   cart_db:
     image: "mysql:latest"
     
+  coupon_db:
+    image: "mysql:latest"
+
   identity_server_db:
     image: "mysql:latest"

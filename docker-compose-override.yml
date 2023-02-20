@@ -4,6 +4,7 @@ volumes:
   productsData:
   identityServerData:
   cartData:
+  couponData:
 
 networks:
   geekshopping:
@@ -30,6 +31,14 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
     ports:
       - 5003:80
+    networks:
+      - geekshopping
+
+  geekshopping_coupon_api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    ports:
+      - 5004:80
     networks:
       - geekshopping
   
@@ -62,7 +71,18 @@ services:
       - bind-address=0.0.0.0
     networks:
       - geekshopping
-  
+
+  coupon_db:
+    volumes:
+      - couponData:/var/lib/mysql
+    ports:
+      - '3309:3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=lalala
+      - bind-address=0.0.0.0
+    networks:
+      - geekshopping
+
   identity_server_db:
     volumes:
       - identityServerData:/var/lib/mysql
