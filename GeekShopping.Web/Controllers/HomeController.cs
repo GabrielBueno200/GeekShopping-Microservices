@@ -8,9 +8,10 @@ using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using GeekShopping.Web.Controllers.Base;
 
 namespace GeekShopping.Web.Controllers;
-public class HomeController : Controller
+public class HomeController : BaseController
 {
     private readonly ILogger<HomeController> _logger;
     private readonly IProductService _productsService;
@@ -53,30 +54,26 @@ public class HomeController : Controller
 
     [HttpPost]
     [ActionName("Details")]
-    public async Task<IActionResult> DetailsPost(ProductViewModel productModelView)
+    public async Task<IActionResult> DetailsPost(ProductViewModel productViewModel)
     {
         var cart = new CartViewModel
         {
-            CartHeader = new CartHeaderViewModel
-            {
-                UserId = User.Claims.Where(claim => claim.Type == "sub")?.FirstOrDefault().Value
-            },
+            CartHeader = new CartHeaderViewModel { UserId = UserId },
             CartDetails = new List<CartDetailViewModel> {
                 new()
                 {
-                    Count = productModelView.Count,
-                    ProductId = productModelView.Id,
-                    Product = await _productsService.FindProductById(productModelView.Id)
+                    Count = productViewModel.Count,
+                    ProductId = productViewModel.Id,
+                    Product = await _productsService.FindProductById(productViewModel.Id)
                 }
             }
         };
 
         var response = await _cartService.AddItemToCart(cart);
 
-        if (response is not null)
-            return RedirectToAction("Index");
+        if (response is not null) return RedirectToAction("Index");
 
-        return View(productModelView);
+        return View(productViewModel);
     }
 
     [Authorize]

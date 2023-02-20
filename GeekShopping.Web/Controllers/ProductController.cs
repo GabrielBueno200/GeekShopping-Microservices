@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using GeekShopping.Web.Controllers.Base;
 using GeekShopping.Web.Models;
 using GeekShopping.Web.Services.Interfaces;
 using GeekShopping.Web.Utils;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GeekShopping.Web.Controllers;
 
-public class ProductController : Controller
+public class ProductController : BaseController
 {
     private readonly IProductService _productService;
 

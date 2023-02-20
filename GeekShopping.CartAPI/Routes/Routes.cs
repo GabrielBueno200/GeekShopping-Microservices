@@ -1,3 +1,4 @@
+using System;
 using GeekShopping.CartAPI.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -48,6 +49,28 @@ namespace GeekShopping.CartAPI.Routes
             => {
                 var status = await repository.RemoveFromCart(cartDetailsId);
                 if (!status) return Results.BadRequest();
+                return Results.Ok(status);
+            });
+
+            app.MapPost($"{BaseRoute}/apply-coupon", async (
+                [FromBody] CartVO cartVo, 
+                [FromServices] ICartRepository repository
+            ) =>
+            {
+                var status = await repository.ApplyCoupon(cartVo.CartHeader.UserId, cartVo.CartHeader.CouponCode);
+                
+                if (!status) return Results.NotFound();
+                return Results.Ok(status);
+            });
+
+            app.MapDelete($"{BaseRoute}/remove-coupon/{{userId}}", async (
+                [FromRoute] string userId, 
+                [FromServices] ICartRepository repository
+            ) =>
+            {
+                var status = await repository.RemoveCoupon(userId);
+                
+                if (!status) return Results.NotFound();
                 return Results.Ok(status);
             });
         }

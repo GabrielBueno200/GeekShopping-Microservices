@@ -1,23 +1,22 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
+using GeekShopping.Web.Controllers.Base;
 using GeekShopping.Web.Models;
 using GeekShopping.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace GeekShopping.Web.Controllers;
 
-public class CartController : Controller
+public class CartController : BaseController
 {
     private readonly ICartService _cartService;
-    private readonly IProductService _productService;
+    private readonly ICouponService _couponService;
 
-    public CartController(IProductService productService, ICartService cartService)
+    public CartController(ICartService cartService, ICouponService couponService)
     {
-        _productService = productService;
         _cartService = cartService;
+        _couponService = couponService;
     }
 
     [Authorize]
@@ -25,6 +24,30 @@ public class CartController : Controller
     {
         var cart = await FindUserCart();
         return View(cart);
+    }
+
+    [HttpPost]
+    [ActionName("ApplyCoupon")]
+    public async Task<IActionResult> ApplyCoupon(CartViewModel cartViewModel)
+    {
+        var response = await _cartService.ApplyCoupon(cartViewModel);
+
+        if (response) return RedirectToAction(nameof(CartIndex));
+        
+        return View();
+    }
+
+    [HttpPost]
+    [ActionName("RemoveCoupon")]
+    public async Task<IActionResult> RemoveCoupon()
+    {
+        var response = await _cartService.RemoveCoupon(UserId);
+
+        if (response)
+        {
+            return RedirectToAction(nameof(CartIndex));
+        }
+        return View();
     }
 
     public async Task<IActionResult> Remove(int id)
@@ -38,14 +61,22 @@ public class CartController : Controller
 
     private async Task<CartViewModel> FindUserCart()
     {
-        var userId = User.Claims.Where(claim => claim.Type == "sub")?.FirstOrDefault().Value;
+        var response = await _cartService.FindCartByUserId(UserId);
 
-        var response = await _cartService.FindCartByUserId(userId);
-        
         if (response?.CartHeader is not null)
-            response.CartDetails.ToList().ForEach(detail => 
-                response.CartHeader.PurchaseAmount += detail.Product.Price * detail.Count
-            );
+        {
+            if (!string.IsNullOrEmpty(response.CartHeader.CouponCode))
+            {
+                var coupon = await _couponService.GetCoupon(response.CartHeader.CouponCode);
+
+                if (coupon?.CouponCode is not null)
+                    response.CartHeader.DiscountAmount = coupon.DiscountAmount;
+            }
+
+            var totalPrice = response.CartDetails.Sum(detail => detail.Product.Price * detail.Count);
+
+            response.CartHeader.PurchaseAmount = totalPrice - response.CartHeader.DiscountAmount;
+        }
 
         return response;
     }
