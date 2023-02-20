@@ -52,9 +52,9 @@ public class CartService : ICartService
         throw new System.NotImplementedException();
     }
 
-    public async Task<bool> RemoveFromCart(long cartId)
+    public async Task<bool> RemoveFromCart(long cartDetailsId)
     {
-        var response = await _client.DeleteAsync($"{BaseUrl}/remove-cart/{cartId}");
+        var response = await _client.DeleteAsync($"{BaseUrl}/remove-cart/{cartDetailsId}");
         if (response.IsSuccessStatusCode)
             return await response.ReadContentAs<bool>();
         else throw new Exception("Something went wrong when calling API");

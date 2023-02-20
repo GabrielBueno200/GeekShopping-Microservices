@@ -43,7 +43,7 @@ namespace GeekShopping.CartAPI.Routes
                 return Results.Ok(cart);
             });
 
-            app.MapPut($"{BaseRoute}/remove-cart/{{cartDetailsId}}", async (
+            app.MapDelete($"{BaseRoute}/remove-cart/{{cartDetailsId}}", async (
                 [FromRoute] int cartDetailsId, 
                 [FromServices] ICartRepository repository) 
             => {
