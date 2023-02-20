@@ -1,8 +1,6 @@
 using System.Reflection;
 using GeekShopping.CartAPI.Model.Context;
 using GeekShopping.ProductAPI.Configurations;
-// using GeekShopping.ProductAPI.Repository;
-using GeekShopping.ProductAPI.Routes;
 using GeekShopping.CartAPI.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +9,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Collections.Generic;
+using GeekShopping.CartAPI.Routes;
+using GeekShopping.CartAPI;
+using GeekShopping.CartAPI.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,6 +81,8 @@ builder.Services.AddSwaggerGen(options =>
         new List<string>()
     }});
 });
+
+builder.Services.AddScoped<ICartRepository, CartRepository>();
 
 var app = builder.Build();
 

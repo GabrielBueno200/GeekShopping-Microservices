@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace GeekShopping.CartAPI.Model;
 
 public class CartVO

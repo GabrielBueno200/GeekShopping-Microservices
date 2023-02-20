@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using GeekShopping.CartAPI.Model;
 using GeekShopping.CartAPI.Model.Context;
@@ -122,14 +125,14 @@ public class CartRepository : ICartRepository
             //If CartHeader is not null
             //Check if CartDetails has same product
             var cartDetail = await _context.CartDetails.AsNoTracking().FirstOrDefaultAsync(
-                cartDetail => cartDetail.ProductId == cartVo.CartDetails.FirstOrDefault().ProductId &&
+                cartDetail => cartDetail.ProductId == cart.CartDetails.FirstOrDefault().ProductId &&
                               cartDetail.CartHeaderId == cartHeader.Id
             );
 
             if (cartDetail is null)
             {
                 //Create CartDetails
-                cart.CartDetails.FirstOrDefault().CartHeaderId = cart.CartHeader.Id;
+                cart.CartDetails.FirstOrDefault().CartHeaderId = cartHeader.Id;
                 cart.CartDetails.FirstOrDefault().Product = null;
                 _context.CartDetails.Add(cart.CartDetails.FirstOrDefault());
                 await _context.SaveChangesAsync();
