@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using GeekShopping.CartAPI.Model.Base;
 
-namespace GeekShopping.CartAPI.Model;
+namespace GeekShopping.OrderAPI.Model;
 
 [Table("cart_header")]
 public class CartHeader : BaseEntity
