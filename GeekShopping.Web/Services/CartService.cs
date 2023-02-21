@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using GeekShopping.Web.Extensions;
@@ -34,11 +35,14 @@ public class CartService : ICartService
         else throw new Exception("Something went wrong when calling API");
     }
 
-    public async Task<CartHeaderViewModel> Checkout(CartHeaderViewModel cartHeaderViewModel)
+    public async Task<object> Checkout(CartHeaderViewModel cartHeaderViewModel)
     {
         var response = await _client.PostAsJson($"{BaseUrl}/checkout", cartHeaderViewModel);
         if (response.IsSuccessStatusCode)
             return await response.ReadContentAs<CartHeaderViewModel>();
+        else if (response.StatusCode is HttpStatusCode.PreconditionFailed)
+            return "Coupon price has changed, please confirm!";
+        
         else throw new Exception("Something went wrong when calling API");
     }
 

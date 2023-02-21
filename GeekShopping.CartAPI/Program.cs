@@ -13,6 +13,7 @@ using GeekShopping.CartAPI.Routes;
 using GeekShopping.CartAPI;
 using GeekShopping.CartAPI.Repository;
 using GeekShopping.CartAPI.RabbitMQSender;
+using GeekShopping.CartAPI.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,6 +83,14 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddSingleton<IRabbitMQMessageSender, RabbitMQMessageSender>();
 
 builder.Services.AddScoped<ICartRepository, CartRepository>();
+
+builder.Services.AddScoped<ICouponRepository, CouponRepository>();
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddSignedHttpClient<ICouponRepository, CouponRepository>(
+    baseUrl: builder.Configuration["ServicesUrls:CouponApi"]
+);
 
 var app = builder.Build();
 

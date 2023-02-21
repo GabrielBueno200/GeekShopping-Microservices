@@ -58,7 +58,12 @@ public class CartController : BaseController
     {
         var response = await _cartService.Checkout(cartViewModel.CartHeader);
 
-        if (response is not null) return RedirectToAction(nameof(Confirmation));
+        if (response is not null && response is string)
+        { 
+            TempData["Error"] = response;
+            return RedirectToAction(nameof(Checkout));
+        }
+        else if (response is not null) return RedirectToAction(nameof(Confirmation));
 
         return View(cartViewModel);
     }

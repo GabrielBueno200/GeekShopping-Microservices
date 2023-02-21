@@ -78,14 +78,24 @@ namespace GeekShopping.CartAPI.Routes
 
             app.MapPost($"{BaseRoute}/checkout", async (
                 [FromBody] CheckoutHeaderVO checkoutHeaderVo, 
-                [FromServices] ICartRepository repository,
+                [FromServices] ICartRepository cartRepository,
+                [FromServices] ICouponRepository couponRepository,
                 [FromServices] IRabbitMQMessageSender messageSender
             ) =>
             {
                 if(checkoutHeaderVo.UserId is null) return Results.BadRequest();
 
-                var cart = await repository.FindCartByUserId(checkoutHeaderVo.UserId);
+                var cart = await cartRepository.FindCartByUserId(checkoutHeaderVo.UserId);
+                
                 if (cart is null) return Results.NotFound();
+
+                if (!string.IsNullOrEmpty(checkoutHeaderVo.CouponCode))
+                {
+                    var coupon = await couponRepository.
+                                    GetCouponByCouponCode(checkoutHeaderVo.CouponCode);
+                    if (checkoutHeaderVo.DiscountAmount != coupon.DiscountAmount)
+                        return Results.Json(statusCode: 412, data: null);
+                }
                 
                 checkoutHeaderVo.CartDetails = cart.CartDetails;
                 checkoutHeaderVo.Time = DateTime.Now;

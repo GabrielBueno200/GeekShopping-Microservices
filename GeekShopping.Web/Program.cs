@@ -34,7 +34,6 @@ builder.Services.AddAuthentication(options => {
     });
 
 builder.Services.AddHttpContextAccessor();
-// !
 
 builder.Services.AddSignedHttpClient<IProductService, ProductService>(
     baseUrl: builder.Configuration["ServicesUrls:ProductApi"]
