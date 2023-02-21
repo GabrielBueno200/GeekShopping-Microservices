@@ -1,7 +1,6 @@
 using System.Reflection;
 using GeekShopping.CartAPI.Model.Context;
 using GeekShopping.CartAPI.Configurations;
-using GeekShopping.CartAPI.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +12,7 @@ using System.Collections.Generic;
 using GeekShopping.CartAPI.Routes;
 using GeekShopping.CartAPI;
 using GeekShopping.CartAPI.Repository;
+using GeekShopping.CartAPI.RabbitMQSender;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,22 +40,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy(Role.Admin, policy => policy.RequireRole(Role.Admin));
-    options.AddPolicy(Role.Client, policy => policy.RequireRole(Role.Client));
     options.AddPolicy("ApiScope", policy =>
     {
         policy.RequireAuthenticatedUser();
         policy.RequireClaim("scope", "geek_shopping");
-    });
-});
+    })
+);
 
 
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "GeekShopping.CartAPI" });
     options.EnableAnnotations();
-    
+
     options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
     {
         Description = @"Enter 'Bearer' [space] and your token!",
@@ -81,6 +78,8 @@ builder.Services.AddSwaggerGen(options =>
         new List<string>()
     }});
 });
+
+builder.Services.AddSingleton<IRabbitMQMessageSender, RabbitMQMessageSender>();
 
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 

@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using GeekShopping.CartAPI.ValueObjects;
+using GeekShopping.MessageBus;
 
 namespace GeekShopping.CartAPI.Messages;
 
-public class CheckoutHeaderVO
+public class CheckoutHeaderVO : BaseMessage
 {
-    public long Id { get; set; }
-
     public string UserId { get; set; }
 
     public string CouponCode { get; set; }

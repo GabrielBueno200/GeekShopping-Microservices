@@ -9,7 +9,6 @@ using Microsoft.OpenApi.Models;
 using System.Collections.Generic;
 using GeekShopping.CouponAPI.Configurations;
 using GeekShopping.CouponAPI.Model.Context;
-using GeekShopping.CouponAPI.Utils;
 using GeekShopping.CouponAPI.Routes;
 using GeekShopping.CouponAPI.Repository;
 
@@ -39,15 +38,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy(Role.Admin, policy => policy.RequireRole(Role.Admin));
-    options.AddPolicy(Role.Client, policy => policy.RequireRole(Role.Client));
     options.AddPolicy("ApiScope", policy =>
     {
         policy.RequireAuthenticatedUser();
         policy.RequireClaim("scope", "geek_shopping");
-    });
-});
+    })
+);
 
 
 builder.Services.AddSwaggerGen(options =>

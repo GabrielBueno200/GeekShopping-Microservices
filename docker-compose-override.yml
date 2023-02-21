@@ -5,9 +5,12 @@ volumes:
   identityServerData:
   cartData:
   couponData:
+  rabbitmqData:
+  rabbitmqLogData:
 
 networks:
   geekshopping:
+
 
 services:
   geekshopping_identity_server:
@@ -41,7 +44,7 @@ services:
       - 5004:80
     networks:
       - geekshopping
-  
+
   geekshopping_web_frontend:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
@@ -93,3 +96,16 @@ services:
       - bind-address=0.0.0.0
     networks:
       - geekshopping
+
+  geek_shopping_rabbitmq:
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=lalala
+    volumes:
+      - rabbitmqData:/var/lib/rabbitmq/ 
+      - rabbitmqLogData:/var/log/rabbitmq
+    ports:
+      # AMQP protocol port
+      - '5672:5672'
+      # HTTP management UI
+      - '15672:15672'
