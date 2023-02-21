@@ -7,9 +7,9 @@ WORKDIR /app
 COPY . .
 RUN dotnet restore GeekShopping.CouponAPI/*.csproj
 
-# copy everything else and build app
+# build app
 WORKDIR /app/GeekShopping.CouponAPI
-RUN dotnet publish GeekShopping.CouponAPI.csproj -c release -o /dist --no-restore
+RUN dotnet publish -c release -o /dist --no-restore
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:7.0

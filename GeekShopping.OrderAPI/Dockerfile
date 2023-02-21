@@ -7,9 +7,9 @@ WORKDIR /app
 COPY . .
 RUN dotnet restore GeekShopping.OrderAPI/*.csproj
 
-# copy everything else and build app
+# build app
 WORKDIR /app/GeekShopping.OrderAPI
-RUN dotnet publish GeekShopping.OrderAPI.csproj -c release -o /dist --no-restore
+RUN dotnet publish -c release -o /dist --no-restore
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
