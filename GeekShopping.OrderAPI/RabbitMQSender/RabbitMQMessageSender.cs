@@ -1,11 +1,11 @@
 using System.Text;
 using System.Text.Json;
-using GeekShopping.CartAPI.Messages;
 using GeekShopping.MessageBus;
+using GeekShopping.OrderAPI.Messages;
 using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 
-namespace GeekShopping.CartAPI.RabbitMQSender;
+namespace GeekShopping.OrderAPI.RabbitMQSender;
 
 public class RabbitMQMessageSender : IRabbitMQMessageSender
 {
@@ -42,8 +42,8 @@ public class RabbitMQMessageSender : IRabbitMQMessageSender
     }
 
     private byte[] GetMessageAsByteArray(BaseMessage baseMessage) =>
-        Encoding.UTF8.GetBytes(JsonSerializer.Serialize<CheckoutHeaderVO>(
-            baseMessage as CheckoutHeaderVO,
+        Encoding.UTF8.GetBytes(JsonSerializer.Serialize<PaymentVO>(
+            baseMessage as PaymentVO,
             options: new() { WriteIndented = true }
         ));
 

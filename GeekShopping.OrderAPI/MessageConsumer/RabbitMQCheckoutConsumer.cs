@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using GeekShopping.OrderAPI.Messages;
 using GeekShopping.OrderAPI.Model;
+using GeekShopping.OrderAPI.RabbitMQSender;
 using GeekShopping.OrderAPI.Repository;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -18,13 +19,19 @@ public class RabbitMQCheckoutConsumer : BackgroundService
 {
     private readonly IConfiguration _configuration;
     private readonly IOrderRepository _repository;
+    private readonly IRabbitMQMessageSender _messageSender;
     private IConnection _connection;
     private IModel _channel;
 
-    public RabbitMQCheckoutConsumer(IConfiguration configuration, IOrderRepository repository)
+    public RabbitMQCheckoutConsumer(
+        IConfiguration configuration,
+        IOrderRepository repository,
+        IRabbitMQMessageSender messageSender
+    )
     {
         _configuration = configuration;
         _repository = repository;
+        _messageSender = messageSender;
 
         var connectionFactory = new ConnectionFactory
         {
@@ -42,7 +49,7 @@ public class RabbitMQCheckoutConsumer : BackgroundService
         cancellationToken.ThrowIfCancellationRequested();
 
         var consumer = new EventingBasicConsumer(_channel);
-        
+
         consumer.Received += (chanel, evt) =>
         {
             var content = Encoding.UTF8.GetString(evt.Body.ToArray());
@@ -52,7 +59,7 @@ public class RabbitMQCheckoutConsumer : BackgroundService
         };
 
         _channel.BasicConsume("checkout_queue", false, consumer);
-        
+
         return Task.CompletedTask;
     }
 
@@ -90,5 +97,25 @@ public class RabbitMQCheckoutConsumer : BackgroundService
         }
 
         await _repository.AddOrder(orderHeader);
+
+        var payment = new PaymentVO
+        {
+            Name = $"{orderHeader.FirstName} {orderHeader.LastName}",
+            CardNumber = orderHeader.CardNumber,
+            CVV = orderHeader.CVV,
+            ExpiryMonthYear = orderHeader.ExpiryMonthYear,
+            OrderId = orderHeader.Id,
+            PurchaseAmount = orderHeader.PurchaseAmount,
+            Email = orderHeader.Email
+        };
+
+        try
+        {
+            _messageSender.SendMessage(payment, "order_payment_process_queue");
+        }
+        catch
+        {
+            throw;
+        }
     }
 }
