@@ -4,13 +4,12 @@ RUN mkdir /app
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
-RUN pwd
-COPY GeekShopping.CouponAPI.csproj .
-RUN dotnet restore
+COPY . .
+RUN dotnet restore GeekShopping.CouponAPI/*.csproj
 
 # copy everything else and build app
-COPY . .
-RUN dotnet publish -c release -o /dist --no-restore
+WORKDIR /app/GeekShopping.CouponAPI
+RUN dotnet publish GeekShopping.CouponAPI.csproj -c release -o /dist --no-restore
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:7.0

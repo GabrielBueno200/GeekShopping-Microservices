@@ -1,44 +1,45 @@
 version: '3.8'
 
 services:
-  geekshopping_message_bus:
-    build:
-      context: ./GeekShopping.MessageBus
-
   geekshopping_identity_server:
     build:
-      context: ./GeekShopping.IdentityServer
+      context: .
+      dockerfile: ./GeekShopping.IdentityServer/Dockerfile
     depends_on:
       - geekshopping_web_frontend
 
   geekshopping_products_api:
     build:
-      context: ./GeekShopping.ProductAPI
+      context: .
+      dockerfile: ./GeekShopping.ProductAPI/Dockerfile
     depends_on:
       - products_db
 
   geekshopping_cart_api:
     build:
-      context: ./GeekShopping.CartAPI
+      context: .
+      dockerfile: ./GeekShopping.CartAPI/Dockerfile
     depends_on:
       - cart_db
 
   geekshopping_coupon_api:
     build:
-      context: ./GeekShopping.CouponAPI
+      context: .
+      dockerfile: ./GeekShopping.CouponAPI/Dockerfile
     depends_on:
       - coupon_db
 
   geekshopping_order_api:
     build:
-      context: ./GeekShopping.OrderAPI
+      context: .
+      dockerfile: ./GeekShopping.OrderAPI/Dockerfile
     depends_on:
       - order_db
-      - geekshopping_message_bus
 
   geekshopping_web_frontend:
     build:
-      context: ./GeekShopping.Web
+      context: .
+      dockerfile: ./GeekShopping.Web/Dockerfile
     depends_on:
       - geekshopping_products_api
       - geekshopping_cart_api

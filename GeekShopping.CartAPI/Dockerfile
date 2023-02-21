@@ -4,13 +4,12 @@ RUN mkdir /app
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
-RUN pwd
-COPY GeekShopping.CartAPI.csproj .
-RUN dotnet restore
+COPY . .
+RUN dotnet restore GeekShopping.CartAPI/*.csproj
 
 # copy everything else and build app
-COPY . .
-RUN dotnet publish -c release -o /dist --no-restore
+WORKDIR /app/GeekShopping.CartAPI
+RUN dotnet publish GeekShopping.CartAPI.csproj -c release -o /dist --no-restore
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:7.0

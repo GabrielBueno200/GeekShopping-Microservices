@@ -4,12 +4,12 @@ RUN mkdir /app
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
-COPY GeekShopping.Web.csproj .
-RUN dotnet restore
+COPY . .
+RUN dotnet restore GeekShopping.Web/*csproj
 
 # copy everything else and build app
-COPY . .
-RUN dotnet publish -c release -o /dist --no-restore
+WORKDIR /app/GeekShopping.Web
+RUN dotnet publish GeekShopping.Web.csproj -c release -o /dist --no-restore
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
