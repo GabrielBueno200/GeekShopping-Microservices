@@ -3,6 +3,7 @@ using System;
 using GeekShopping.OrderAPI.Model.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GeekShopping.OrderAPI.Migrations
 {
     [DbContext(typeof(MySQLContext))]
-    partial class MySQLContextModelSnapshot : ModelSnapshot
+    [Migration("20230221031347_FixPriceColumnType")]
+    partial class FixPriceColumnType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -71,10 +74,6 @@ namespace GeekShopping.OrderAPI.Migrations
                         .HasColumnType("longtext")
                         .HasColumnName("coupon_code");
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("purchase_date");
-
                     b.Property<decimal>("DiscountAmount")
                         .HasColumnType("decimal(65,30)")
                         .HasColumnName("discount_amount");
@@ -127,17 +126,12 @@ namespace GeekShopping.OrderAPI.Migrations
             modelBuilder.Entity("GeekShopping.OrderAPI.Model.OrderDetail", b =>
                 {
                     b.HasOne("GeekShopping.OrderAPI.Model.OrderHeader", "OrderHeader")
-                        .WithMany("OrderDetails")
+                        .WithMany()
                         .HasForeignKey("OrderHeaderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("OrderHeader");
-                });
-
-            modelBuilder.Entity("GeekShopping.OrderAPI.Model.OrderHeader", b =>
-                {
-                    b.Navigation("OrderDetails");
                 });
 #pragma warning restore 612, 618
         }

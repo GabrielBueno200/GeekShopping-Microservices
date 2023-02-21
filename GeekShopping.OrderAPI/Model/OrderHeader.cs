@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using GeekShopping.OrderAPI.Model.Base;
 
@@ -21,9 +22,12 @@ public class OrderHeader : BaseEntity
 
     [Column("first_name")]
     public string FirstName { get; set; }
-    
+
     [Column("last_name")]
     public string LastName { get; set; }
+    
+    [Column("purchase_date")]
+    public DateTime DateTime { get; set; }
 
     [Column("order_time")]
     public DateTime OrderTime { get; set; }
@@ -47,5 +51,6 @@ public class OrderHeader : BaseEntity
     public int TotalItens { get; set; }
 
     [Column("payment_status")]
-    public int PaymentStatus { get; set; }
+    public bool PaymentStatus { get; set; }
+    public List<OrderDetail> OrderDetails { get; set; }
 }

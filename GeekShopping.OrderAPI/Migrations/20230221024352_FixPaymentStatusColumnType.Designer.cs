@@ -3,6 +3,7 @@ using System;
 using GeekShopping.OrderAPI.Model.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GeekShopping.OrderAPI.Migrations
 {
     [DbContext(typeof(MySQLContext))]
-    partial class MySQLContextModelSnapshot : ModelSnapshot
+    [Migration("20230221024352_FixPaymentStatusColumnType")]
+    partial class FixPaymentStatusColumnType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,8 +36,8 @@ namespace GeekShopping.OrderAPI.Migrations
                     b.Property<long>("OrderHeaderId")
                         .HasColumnType("bigint");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(65,30)")
+                    b.Property<string>("Price")
+                        .HasColumnType("longtext")
                         .HasColumnName("price");
 
                     b.Property<long>("ProductId")
@@ -70,10 +73,6 @@ namespace GeekShopping.OrderAPI.Migrations
                     b.Property<string>("CouponCode")
                         .HasColumnType("longtext")
                         .HasColumnName("coupon_code");
-
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("purchase_date");
 
                     b.Property<decimal>("DiscountAmount")
                         .HasColumnType("decimal(65,30)")
@@ -127,17 +126,12 @@ namespace GeekShopping.OrderAPI.Migrations
             modelBuilder.Entity("GeekShopping.OrderAPI.Model.OrderDetail", b =>
                 {
                     b.HasOne("GeekShopping.OrderAPI.Model.OrderHeader", "OrderHeader")
-                        .WithMany("OrderDetails")
+                        .WithMany()
                         .HasForeignKey("OrderHeaderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("OrderHeader");
-                });
-
-            modelBuilder.Entity("GeekShopping.OrderAPI.Model.OrderHeader", b =>
-                {
-                    b.Navigation("OrderDetails");
                 });
 #pragma warning restore 612, 618
         }

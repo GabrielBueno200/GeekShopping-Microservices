@@ -1,4 +1,6 @@
+using GeekShopping.OrderAPI.MessageConsumer;
 using GeekShopping.OrderAPI.Model.Context;
+using GeekShopping.OrderAPI.Repository;
 using GeekShopping.OrderAPI.Routes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -15,11 +17,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var connectionString = builder.Configuration["DatabaseConnection:MySQLConnectionString"];
+var serverVersion = ServerVersion.AutoDetect(connectionString);
+
 builder.Services.AddDbContext<MySQLContext>(options =>
-{
-    var connectionString = builder.Configuration["DatabaseConnection:MySQLConnectionString"];
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-});
+    options.UseMySql(connectionString, serverVersion)
+);
+
+var dbContextOptionsBuilder = new DbContextOptionsBuilder<MySQLContext>();
+dbContextOptionsBuilder.UseMySql(connectionString, serverVersion);
+
+builder.Services.AddSingleton<IOrderRepository>(new OrderRepository(dbContextOptionsBuilder.Options));
+
+builder.Services.AddHostedService<RabbitMQCheckoutConsumer>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
@@ -70,10 +80,6 @@ builder.Services.AddSwaggerGen(options =>
         new List<string>()
     }});
 });
-
-// builder.Services.AddSingleton<IRabbitMQMessageSender, RabbitMQMessageSender>();
-
-// builder.Services.AddScoped<ICartRepository, CartRepository>();
 
 var app = builder.Build();
 
