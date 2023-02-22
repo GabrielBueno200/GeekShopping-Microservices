@@ -8,6 +8,7 @@ volumes:
   orderData:
   rabbitmqData:
   rabbitmqLogData:
+  emailData:
 
 networks:
   geekshopping:
@@ -111,6 +112,17 @@ services:
       - identityServerData:/var/lib/mysql
     ports:
       - '3307:3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=lalala
+      - bind-address=0.0.0.0
+    networks:
+      - geekshopping
+
+  email_db:
+    volumes:
+      - emailData:/var/lib/mysql
+    ports:
+      - '3311:3306'
     environment:
       - MYSQL_ROOT_PASSWORD=lalala
       - bind-address=0.0.0.0

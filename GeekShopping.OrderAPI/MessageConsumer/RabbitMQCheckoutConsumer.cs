@@ -50,11 +50,11 @@ public class RabbitMQCheckoutConsumer : BackgroundService
 
         var consumer = new EventingBasicConsumer(_channel);
 
-        consumer.Received += (chanel, evt) =>
+        consumer.Received += (channel, evt) =>
         {
             var content = Encoding.UTF8.GetString(evt.Body.ToArray());
-            var vo = JsonSerializer.Deserialize<CheckoutHeaderVO>(content);
-            ProcessOrder(vo).GetAwaiter().GetResult();
+            var checkoutHeaderVO = JsonSerializer.Deserialize<CheckoutHeaderVO>(content);
+            ProcessOrder(checkoutHeaderVO).GetAwaiter().GetResult();
             _channel.BasicAck(evt.DeliveryTag, false);
         };
 

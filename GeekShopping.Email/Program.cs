@@ -1,7 +1,6 @@
+using GeekShopping.Email.Model.Context;
+using GeekShopping.Email.Repository;
 using GeekShopping.OrderAPI.MessageConsumer;
-using GeekShopping.OrderAPI.Model.Context;
-using GeekShopping.OrderAPI.RabbitMQSender;
-using GeekShopping.OrderAPI.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -27,12 +26,9 @@ builder.Services.AddDbContext<MySQLContext>(options =>
 var dbContextOptionsBuilder = new DbContextOptionsBuilder<MySQLContext>();
 dbContextOptionsBuilder.UseMySql(connectionString, serverVersion);
 
-builder.Services.AddSingleton<IOrderRepository>(new OrderRepository(dbContextOptionsBuilder.Options));
+builder.Services.AddSingleton<IEmailRepository>(new EmailRepository(dbContextOptionsBuilder.Options));
 
 builder.Services.AddHostedService<RabbitMQPaymentConsumer>();
-builder.Services.AddHostedService<RabbitMQCheckoutConsumer>();
-
-builder.Services.AddSingleton<IRabbitMQMessageSender, RabbitMQMessageSender>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>

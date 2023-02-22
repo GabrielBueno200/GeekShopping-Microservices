@@ -2,33 +2,31 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using GeekShopping.PaymentAPI.Messages;
-using GeekShopping.PaymentAPI.RabbitMQSender;
-using GeekShopping.PaymentProcessor;
+using GeekShopping.Email.Repository;
+using GeekShopping.OrderAPI.Messages;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace GeekShopping.PaymentAPI.MessageConsumer;
+namespace GeekShopping.OrderAPI.MessageConsumer;
 
 public class RabbitMQPaymentConsumer : BackgroundService
 {
     private readonly IConfiguration _configuration;
-    private readonly IProcessPayment _processPayment;
-    private readonly IRabbitMQMessageSender _messageSender;
+    private readonly IEmailRepository _repository;
     private IConnection _connection;
     private IModel _channel;
+    private const string ExchangeName = "DirectPaymentUpdateExchange";
+    private const string PaymentEmailUpdateQueueName = "PaymentEmailUpdateQueueName";
 
     public RabbitMQPaymentConsumer(
         IConfiguration configuration,
-        IProcessPayment processPayment,
-        IRabbitMQMessageSender messageSender
+        IEmailRepository repository
     )
     {
         _configuration = configuration;
-        _processPayment = processPayment;
-        _messageSender = messageSender;
+        _repository = repository;
 
         var connectionFactory = new ConnectionFactory
         {
@@ -38,7 +36,10 @@ public class RabbitMQPaymentConsumer : BackgroundService
         };
         _connection = connectionFactory.CreateConnection();
         _channel = _connection.CreateModel();
-        _channel.QueueDeclare(queue: "order_payment_process_queue", false, false, false, arguments: null);
+
+        _channel.ExchangeDeclare(ExchangeName, ExchangeType.Direct);
+        _channel.QueueDeclare(PaymentEmailUpdateQueueName, false, false, false, null);
+        _channel.QueueBind(PaymentEmailUpdateQueueName, ExchangeName, routingKey: "PaymentEmail");
     }
 
     protected override Task ExecuteAsync(CancellationToken cancellationToken)
@@ -50,36 +51,25 @@ public class RabbitMQPaymentConsumer : BackgroundService
         consumer.Received += (channel, evt) =>
         {
             var content = Encoding.UTF8.GetString(evt.Body.ToArray());
-            var paymentMessage = JsonSerializer.Deserialize<PaymentMessage>(content);
-            ProcessPayment(paymentMessage).GetAwaiter().GetResult();
+            var message = JsonSerializer.Deserialize<UpdatePaymentResultMessage>(content);
+            ProcessLogs(message).GetAwaiter().GetResult();
             _channel.BasicAck(evt.DeliveryTag, false);
         };
 
-        _channel.BasicConsume("order_payment_process_queue", false, consumer);
+        _channel.BasicConsume(PaymentEmailUpdateQueueName, false, consumer);
 
         return Task.CompletedTask;
     }
 
-    private Task ProcessPayment(PaymentMessage paymentMessage)
+    private async Task ProcessLogs(UpdatePaymentResultMessage message)
     {
-        var result = _processPayment.PaymentProcessor();
-
-        UpdatePaymentResultMessage paymentResult = new()
-        {
-            Status = result,
-            OrderId = paymentMessage.OrderId,
-            Email = paymentMessage.Email
-        };
-
         try
         {
-            _messageSender.SendMessage(paymentResult);
+            await _repository.LogEmail(message);
         }
         catch
         {
             throw;
         }
-
-        return Task.CompletedTask;
     }
 }

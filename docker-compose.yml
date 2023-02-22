@@ -59,5 +59,8 @@ services:
   identity_server_db:
     image: "mysql:latest"
 
+  email_db:
+    image: "mysql:latest"
+
   geek_shopping_rabbitmq:
     image: rabbitmq:3.11.9-management-alpine

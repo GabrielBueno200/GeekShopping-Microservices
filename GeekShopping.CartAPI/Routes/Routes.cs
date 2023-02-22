@@ -16,7 +16,7 @@ namespace GeekShopping.CartAPI.Routes
         public static void AddRoutes(this WebApplication app)
         {
             app.MapGet($"{BaseRoute}/find-cart/{{userId}}", async (
-                [FromRoute] string userId, 
+                [FromRoute] string userId,
                 [FromServices] ICartRepository repository
             ) =>
             {
@@ -26,7 +26,7 @@ namespace GeekShopping.CartAPI.Routes
             });
 
             app.MapPost($"{BaseRoute}/add-cart", async (
-                [FromBody] CartVO cartVo, 
+                [FromBody] CartVO cartVo,
                 [FromServices] ICartRepository repository
             ) =>
             {
@@ -36,7 +36,7 @@ namespace GeekShopping.CartAPI.Routes
             });
 
             app.MapDelete($"{BaseRoute}/update-cart", async (
-                [FromBody] CartVO cartVo, 
+                [FromBody] CartVO cartVo,
                 [FromServices] ICartRepository repository
             ) =>
             {
@@ -46,47 +46,48 @@ namespace GeekShopping.CartAPI.Routes
             });
 
             app.MapDelete($"{BaseRoute}/remove-cart/{{cartDetailsId}}", async (
-                [FromRoute] int cartDetailsId, 
-                [FromServices] ICartRepository repository) 
-            => {
+                [FromRoute] int cartDetailsId,
+                [FromServices] ICartRepository repository)
+            =>
+            {
                 var status = await repository.RemoveFromCart(cartDetailsId);
                 if (!status) return Results.BadRequest();
                 return Results.Ok(status);
             });
 
             app.MapPost($"{BaseRoute}/apply-coupon", async (
-                [FromBody] CartVO cartVo, 
+                [FromBody] CartVO cartVo,
                 [FromServices] ICartRepository repository
             ) =>
             {
                 var status = await repository.ApplyCoupon(cartVo.CartHeader.UserId, cartVo.CartHeader.CouponCode);
-                
+
                 if (!status) return Results.NotFound();
                 return Results.Ok(status);
             });
 
             app.MapDelete($"{BaseRoute}/remove-coupon/{{userId}}", async (
-                [FromRoute] string userId, 
+                [FromRoute] string userId,
                 [FromServices] ICartRepository repository
             ) =>
             {
                 var status = await repository.RemoveCoupon(userId);
-                
+
                 if (!status) return Results.NotFound();
                 return Results.Ok(status);
             });
 
             app.MapPost($"{BaseRoute}/checkout", async (
-                [FromBody] CheckoutHeaderVO checkoutHeaderVo, 
+                [FromBody] CheckoutHeaderVO checkoutHeaderVo,
                 [FromServices] ICartRepository cartRepository,
                 [FromServices] ICouponRepository couponRepository,
                 [FromServices] IRabbitMQMessageSender messageSender
             ) =>
             {
-                if(checkoutHeaderVo.UserId is null) return Results.BadRequest();
+                if (checkoutHeaderVo.UserId is null) return Results.BadRequest();
 
                 var cart = await cartRepository.FindCartByUserId(checkoutHeaderVo.UserId);
-                
+
                 if (cart is null) return Results.NotFound();
 
                 if (!string.IsNullOrEmpty(checkoutHeaderVo.CouponCode))
@@ -96,11 +97,13 @@ namespace GeekShopping.CartAPI.Routes
                     if (checkoutHeaderVo.DiscountAmount != coupon.DiscountAmount)
                         return Results.Json(statusCode: 412, data: null);
                 }
-                
+
                 checkoutHeaderVo.CartDetails = cart.CartDetails;
                 checkoutHeaderVo.Time = DateTime.Now;
 
                 messageSender.SendMessage(checkoutHeaderVo, "checkout_queue");
+
+                await cartRepository.ClearCart(checkoutHeaderVo.UserId);
 
                 return Results.Ok(checkoutHeaderVo);
             });

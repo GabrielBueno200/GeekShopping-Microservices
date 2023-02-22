@@ -11,32 +11,46 @@ public class RabbitMQMessageSender : IRabbitMQMessageSender
 {
     private readonly IConfiguration _configuration;
     private IConnection _connection;
+    private const string ExchangeName = "DirectPaymentUpdateExchange";
+    private const string PaymentEmailUpdateQueueName = "PaymentEmailUpdateQueueName";
+    private const string PaymentOrderUpdateQueueName = "PaymentOrderUpdateQueueName";
 
     public RabbitMQMessageSender(IConfiguration configuration)
     {
         _configuration = configuration;
     }
 
-    public void SendMessage(BaseMessage baseMessage, string queueName)
+    public void SendMessage(BaseMessage baseMessage)
     {
         if (ConnectionExists())
         {
             using (var channel = _connection.CreateModel())
             {
-                channel.QueueDeclare(
-                    queue: queueName,
-                    durable: false,
-                    exclusive: false,
-                    autoDelete: false,
-                    arguments: null
+                channel.ExchangeDeclare(ExchangeName, ExchangeType.Direct, durable: false);
+                channel.QueueDeclare(PaymentEmailUpdateQueueName, false, false, false, null);
+                channel.QueueDeclare(PaymentOrderUpdateQueueName, false, false, false, null);
+
+                channel.QueueBind(
+                    PaymentEmailUpdateQueueName,
+                    ExchangeName,
+                    routingKey: "PaymentEmail"
                 );
 
-                channel.BasicPublish(
-                    exchange: string.Empty,
-                    routingKey: queueName,
-                    basicProperties: null,
-                    body: GetMessageAsByteArray(baseMessage)
+                channel.QueueBind(
+                    PaymentOrderUpdateQueueName,
+                    ExchangeName,
+                    routingKey: "PaymentOrder"
                 );
+
+                var body = GetMessageAsByteArray(baseMessage);
+
+                channel.BasicPublish(
+                    exchange: ExchangeName,
+                    routingKey: "PaymentEmail", basicProperties: null, body: body);
+
+                channel.BasicPublish(
+                    exchange: ExchangeName,
+                    routingKey: "PaymentOrder", basicProperties: null, body: body);
             }
         }
     }
