@@ -12,7 +12,7 @@
     "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": true,
+      "launchBrowser": false,
       "hotReloadProfile": "aspnetcore",
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7268;http://localhost:5192",
@@ -23,7 +23,7 @@
     "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "swagger",
       "hotReloadProfile": "aspnetcore",
       "applicationUrl": "http://localhost:5192",
@@ -33,7 +33,7 @@
     },
     "IIS Express": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "applicationUrl": "https://localhost:7268/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

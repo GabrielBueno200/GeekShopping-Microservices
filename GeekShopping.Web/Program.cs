@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using GeekShopping.Web.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
