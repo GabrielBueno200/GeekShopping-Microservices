@@ -5,14 +5,14 @@ WORKDIR /app
 
 # copy csproj and restore as distinct layers
 COPY . .
-RUN dotnet restore GeekShopping.Web/*.csproj
+RUN dotnet restore GeekShopping.PaymentAPI/*.csproj
 
 # build app
-WORKDIR /app/GeekShopping.Web
+WORKDIR /app/GeekShopping.PaymentAPI
 RUN dotnet publish -c release -o /dist --no-restore
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /dist
 COPY --from=build /dist ./
-ENTRYPOINT ["dotnet", "GeekShopping.Web.dll"]
+ENTRYPOINT ["dotnet", "GeekShopping.PaymentAPI.dll"]

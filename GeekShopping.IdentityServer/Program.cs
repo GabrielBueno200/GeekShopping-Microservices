@@ -24,10 +24,15 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<MySQLContext>()
     .AddDefaultTokenProviders();
 
-var identityConfiguration = new IdentityConfiguration(builder.Configuration);
+var identityConfiguration = new IdentityConfiguration(builder.Configuration, builder.Environment);
 
 builder.Services.AddIdentityServer(options =>
 {
+    if (builder.Environment.IsDevelopment())
+    {
+        // It is not advisable to override this in production
+        options.IssuerUri = builder.Configuration["IdentityServerLocalHost"];
+    }
     options.Events.RaiseErrorEvents = true;
     options.Events.RaiseInformationEvents = true;
     options.Events.RaiseFailureEvents = true;

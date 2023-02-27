@@ -17,7 +17,7 @@ networks:
 services:
   geekshopping_identity_server:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - 5002:80
     networks:
@@ -25,7 +25,7 @@ services:
 
   geekshopping_products_api:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - 5001:80
     networks:
@@ -33,7 +33,7 @@ services:
 
   geekshopping_cart_api:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - 5003:80
     networks:
@@ -41,7 +41,7 @@ services:
 
   geekshopping_coupon_api:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - 5004:80
     networks:
@@ -49,7 +49,7 @@ services:
 
   geekshopping_order_api:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - 5005:80
     networks:
@@ -57,7 +57,7 @@ services:
 
   geekshopping_email:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - 5006:80
     networks:
@@ -65,15 +65,23 @@ services:
 
   geekshopping_api_gateway:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - 5007:80
     networks:
       - geekshopping
 
+  geekshopping_payment_api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - 5008:80
+    networks:
+      - geekshopping
+
   geekshopping_web_frontend:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - 5000:80
     networks:

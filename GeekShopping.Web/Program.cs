@@ -1,4 +1,3 @@
-using System.Net.Http.Headers;
 using System;
 using GeekShopping.Web.Services;
 using GeekShopping.Web.Services.Interfaces;
@@ -7,19 +6,43 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication;
 using GeekShopping.Web.Utils;
+using System.Threading.Tasks;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
+IdentityModelEventSource.ShowPII = true;
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddAuthentication(options => {
+builder.Services.AddAuthentication(options =>
+{
     options.DefaultScheme = "Cookies";
     options.DefaultChallengeScheme = "oidc";
 })
-    .AddCookie("Cookies", cookie => cookie.ExpireTimeSpan = TimeSpan.FromMinutes(10))
+    .AddCookie("Cookies", options =>
+    {
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+    })
     .AddOpenIdConnect("oidc", options =>
     {
-        options.Authority = builder.Configuration["ServicesUrls:IdentityServer"];
+        if (builder.Environment.IsDevelopment())
+        {
+            // It is important this matches the actual URL of your identity server, not the Docker internal URL
+            options.Authority = $"{builder.Configuration["ServicesUrls:IdentityServerLocalHost"]}";
+
+            // This will allow the container to reach the discovery endpoint
+            options.MetadataAddress = $"{builder.Configuration["ServicesUrls:IdentityServer"]}/.well-known/openid-configuration";
+            options.RequireHttpsMetadata = false;
+            options.Events.OnRedirectToIdentityProvider = context =>
+            {
+                // Intercept the redirection so the browser navigates to the right URL in your host
+                context.ProtocolMessage.IssuerAddress = $"{builder.Configuration["ServicesUrls:IdentityServerLocalHost"]}/connect/authorize";
+                return Task.CompletedTask;
+            };
+        }
+        else
+            options.Authority = builder.Configuration["ServicesUrls:IdentityServer"];
         options.GetClaimsFromUserInfoEndpoint = true;
         options.ClientId = "geek_shopping";
         options.ClientSecret = "my_super_secret";
@@ -60,7 +83,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 app.UseAuthentication();
 
 app.UseAuthorization();

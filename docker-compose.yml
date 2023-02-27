@@ -43,6 +43,11 @@ services:
     depends_on:
       - email_db
 
+  geekshopping_payment_api:
+    build:
+      context: .
+      dockerfile: ./GeekShopping.PaymentAPI/Dockerfile
+
   geekshopping_api_gateway:
     build:
       context: .
@@ -52,6 +57,7 @@ services:
       - geekshopping_cart_api
       - geekshopping_coupon_api
       - geekshopping_order_api
+      - geekshopping_payment_api
       - geekshopping_email
       - geekshopping_identity_server
 
