@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: ./GeekShopping.IdentityServer/Dockerfile
     depends_on:
-      - geekshopping_web_frontend
+      - identity_server_db
 
   geekshopping_products_api:
     build:
@@ -35,6 +35,25 @@ services:
       dockerfile: ./GeekShopping.OrderAPI/Dockerfile
     depends_on:
       - order_db
+
+  geekshopping_email:
+    build:
+      context: .
+      dockerfile: ./GeekShopping.Email/Dockerfile
+    depends_on:
+      - email_db
+
+  geekshopping_api_gateway:
+    build:
+      context: .
+      dockerfile: ./GeekShopping.APIGateway/Dockerfile
+    depends_on:
+      - geekshopping_products_api
+      - geekshopping_cart_api
+      - geekshopping_coupon_api
+      - geekshopping_order_api
+      - geekshopping_email
+      - geekshopping_identity_server
 
   geekshopping_web_frontend:
     build:

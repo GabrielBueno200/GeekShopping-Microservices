@@ -55,6 +55,22 @@ services:
     networks:
       - geekshopping
 
+  geekshopping_email:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    ports:
+      - 5006:80
+    networks:
+      - geekshopping
+
+  geekshopping_api_gateway:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    ports:
+      - 5007:80
+    networks:
+      - geekshopping
+
   geekshopping_web_frontend:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
