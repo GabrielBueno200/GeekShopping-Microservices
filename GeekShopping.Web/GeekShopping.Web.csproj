@@ -11,4 +11,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.27.0" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GeekShopping.IoC.Utilities\GeekShopping.IoC.Utilities.csproj" />
+    <ProjectReference Include="..\GeekShopping.IoC.DependencyInjection\GeekShopping.IoC.DependencyInjection.csproj" />
+  </ItemGroup>
 </Project>

@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
+using GeekShopping.IoC.Utilities.SharedModels;
 using GeekShopping.Web.Controllers.Base;
 using GeekShopping.Web.Models;
 using GeekShopping.Web.Services.Interfaces;
-using GeekShopping.Web.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -50,7 +50,7 @@ public class ProductController : BaseController
     {
         var product = await _productService.FindProductById(id);
         if (product is not null) return View(product);
-        return NotFound();        
+        return NotFound();
     }
 
 

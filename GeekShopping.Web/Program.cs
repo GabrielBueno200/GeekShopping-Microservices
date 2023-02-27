@@ -5,10 +5,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication;
-using GeekShopping.Web.Utils;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Logging;
-using Microsoft.AspNetCore.Http;
+using GeekShopping.IoC.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 IdentityModelEventSource.ShowPII = true;

@@ -1,7 +1,6 @@
 using GeekShopping.IdentityServer.Model;
 using GeekShopping.IdentityServer.Model.Context;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using GeekShopping.IdentityServer.Configurations;
 using GeekShopping.IdentityServer.Initializer;
 using GeekShopping.IdentityServer.Services;
@@ -9,14 +8,11 @@ using Duende.IdentityServer.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using GeekShopping.IoC.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<MySQLContext>(options =>
-{
-    var connectionString = builder.Configuration["DatabaseConnection:MySQLConnectionString"];
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-});
+builder.Services.AddDatabaseConfigs<MySQLContext>(builder.Configuration);
 
 builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 

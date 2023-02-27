@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace GeekShopping.CartAPI.Utils;
+namespace GeekShopping.IoC.DependencyInjection;
 
-public static class HttpClientTokenSigner 
+public static class HttpClientTokenSigner
 {
     public static void AddSignedHttpClient<TInterface, TEntity>(this IServiceCollection services, string baseUrl)
         where TInterface : class
@@ -19,7 +19,7 @@ public static class HttpClientTokenSigner
             client.BaseAddress = new Uri(baseUrl);
 
             var token = httpContextAccessor.HttpContext?.GetTokenAsync("access_token").GetAwaiter().GetResult();
-            
+
             if (!string.IsNullOrEmpty(token))
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         });

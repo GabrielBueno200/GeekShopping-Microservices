@@ -1,4 +1,4 @@
-namespace GeekShopping.Web.Utils;
+namespace GeekShopping.IoC.Utilities.SharedModels;
 
 public static class Role
 {
