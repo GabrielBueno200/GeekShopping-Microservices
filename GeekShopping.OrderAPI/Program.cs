@@ -1,7 +1,7 @@
 using GeekShopping.IoC.DependencyInjection;
 using GeekShopping.OrderAPI.MessageConsumer;
+using GeekShopping.OrderAPI.MessageSender;
 using GeekShopping.OrderAPI.Model.Context;
-using GeekShopping.OrderAPI.RabbitMQSender;
 using GeekShopping.OrderAPI.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +22,7 @@ builder.Services.AddSingleton<IOrderRepository>(new OrderRepository(dbContextOpt
 
 builder.Services.AddHostedService<RabbitMQPaymentConsumer>();
 builder.Services.AddHostedService<RabbitMQCheckoutConsumer>();
-builder.Services.AddSingleton<IRabbitMQMessageSender, RabbitMQMessageSender>();
+builder.Services.AddSingleton<OrderMessageSender>();
 
 builder.Services.AddAuthConfigs(builder.Configuration);
 builder.Services.AddSwaggerConfigs("GeekShopping.OrderAPI");

@@ -1,70 +1,49 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
+using GeekShopping.MessageBus;
+using GeekShopping.MessageBus.RabbitMQMessageConsumer;
 using GeekShopping.OrderAPI.Messages;
+using GeekShopping.OrderAPI.MessageSender;
 using GeekShopping.OrderAPI.Model;
-using GeekShopping.OrderAPI.RabbitMQSender;
 using GeekShopping.OrderAPI.Repository;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
 namespace GeekShopping.OrderAPI.MessageConsumer;
 
-public class RabbitMQCheckoutConsumer : BackgroundService
+public class RabbitMQCheckoutConsumer : BaseRabbitMQMessageConsumer<CheckoutHeaderVO>
 {
-    private readonly IConfiguration _configuration;
     private readonly IOrderRepository _repository;
-    private readonly IRabbitMQMessageSender _messageSender;
-    private IConnection _connection;
-    private IModel _channel;
+    private readonly OrderMessageSender _messageSender;
 
     public RabbitMQCheckoutConsumer(
         IConfiguration configuration,
         IOrderRepository repository,
-        IRabbitMQMessageSender messageSender
-    )
+        OrderMessageSender messageSender
+    ) : base(configuration)
     {
-        _configuration = configuration;
         _repository = repository;
         _messageSender = messageSender;
+        ConsumeCallback = ProcessOrder;
 
-        var connectionFactory = new ConnectionFactory
-        {
-            HostName = _configuration["RabbitMQ:HostName"],
-            UserName = _configuration["RabbitMQ:UserName"],
-            Password = _configuration["RabbitMQ:Password"]
-        };
-        _connection = connectionFactory.CreateConnection();
-        _channel = _connection.CreateModel();
         _channel.QueueDeclare(queue: "checkout_queue", false, false, false, arguments: null);
     }
 
-    protected override Task ExecuteAsync(CancellationToken cancellationToken)
+    protected override EventingBasicConsumer ConsumeMessage()
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        var consumer = new EventingBasicConsumer(_channel);
-
-        consumer.Received += (channel, evt) =>
-        {
-            var content = Encoding.UTF8.GetString(evt.Body.ToArray());
-            var checkoutHeaderVO = JsonSerializer.Deserialize<CheckoutHeaderVO>(content);
-            ProcessOrder(checkoutHeaderVO).GetAwaiter().GetResult();
-            _channel.BasicAck(evt.DeliveryTag, false);
-        };
+        var consumer = base.ConsumeMessage();
 
         _channel.BasicConsume("checkout_queue", false, consumer);
 
-        return Task.CompletedTask;
+        return consumer;
     }
 
-    private async Task ProcessOrder(CheckoutHeaderVO checkoutHeaderVo)
+    private async Task ProcessOrder(BaseMessage message)
     {
+        var checkoutHeaderVo = message as CheckoutHeaderVO;
+
         var orderHeader = new OrderHeader()
         {
             UserId = checkoutHeaderVo.UserId,

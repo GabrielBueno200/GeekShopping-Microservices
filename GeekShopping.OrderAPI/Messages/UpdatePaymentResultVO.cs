@@ -1,6 +1,8 @@
+using GeekShopping.MessageBus;
+
 namespace GeekShopping.Email.Messages;
 
-public class UpdatePaymentResultVO
+public class UpdatePaymentResultVO : BaseMessage
 {
     public long OrderId { get; set; }
 

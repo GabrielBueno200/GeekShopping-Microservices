@@ -1,26 +1,22 @@
-using System.Text;
-using System.Text.Json;
 using GeekShopping.MessageBus;
+using GeekShopping.MessageBus.RabbitMQMessageSender;
 using GeekShopping.PaymentAPI.Messages;
 using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 
-namespace GeekShopping.PaymentAPI.RabbitMQSender;
+namespace GeekShopping.PaymentAPI.MessageSender;
 
-public class RabbitMQMessageSender : IRabbitMQMessageSender
+public class PaymentMessageSender : BaseRabbitMQMessageSender
 {
-    private readonly IConfiguration _configuration;
-    private IConnection _connection;
     private const string ExchangeName = "DirectPaymentUpdateExchange";
     private const string PaymentEmailUpdateQueueName = "PaymentEmailUpdateQueueName";
     private const string PaymentOrderUpdateQueueName = "PaymentOrderUpdateQueueName";
 
-    public RabbitMQMessageSender(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
+    public PaymentMessageSender(IConfiguration configuration)
+        : base(configuration) { }
 
-    public void SendMessage(BaseMessage baseMessage)
+
+    public override void SendMessage(BaseMessage baseMessage, string queueName = default)
     {
         if (ConnectionExists())
         {
@@ -42,7 +38,7 @@ public class RabbitMQMessageSender : IRabbitMQMessageSender
                     routingKey: "PaymentOrder"
                 );
 
-                var body = GetMessageAsByteArray(baseMessage);
+                var body = GetMessageAsByteArray<UpdatePaymentResultMessage>(baseMessage);
 
                 channel.BasicPublish(
                     exchange: ExchangeName,
@@ -53,37 +49,5 @@ public class RabbitMQMessageSender : IRabbitMQMessageSender
                     routingKey: "PaymentOrder", basicProperties: null, body: body);
             }
         }
-    }
-
-    private byte[] GetMessageAsByteArray(BaseMessage baseMessage) =>
-        Encoding.UTF8.GetBytes(JsonSerializer.Serialize<UpdatePaymentResultMessage>(
-            baseMessage as UpdatePaymentResultMessage,
-            options: new() { WriteIndented = true }
-        ));
-
-    private void CreateConnection()
-    {
-        try
-        {
-            var connectionFactory = new ConnectionFactory
-            {
-                HostName = _configuration["RabbitMQ:HostName"],
-                UserName = _configuration["RabbitMQ:UserName"],
-                Password = _configuration["RabbitMQ:Password"]
-            };
-
-            _connection = connectionFactory.CreateConnection();
-        }
-        catch
-        {
-            throw;
-        }
-    }
-
-    private bool ConnectionExists()
-    {
-        if (_connection is not null) return true;
-        CreateConnection();
-        return _connection is not null;
     }
 }

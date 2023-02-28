@@ -1,6 +1,8 @@
+using GeekShopping.MessageBus;
+
 namespace GeekShopping.OrderAPI.Messages;
 
-public class UpdatePaymentResultMessage
+public class UpdatePaymentResultMessage : BaseMessage
 {
     public long OrderId { get; set; }
 

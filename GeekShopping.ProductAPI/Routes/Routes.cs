@@ -1,5 +1,5 @@
+using GeekShopping.IoC.Utilities.SharedModels;
 using GeekShopping.ProductAPI.Repository;
-using GeekShopping.ProductAPI.Utils;
 using GeekShopping.ProductAPI.ValueObjects;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

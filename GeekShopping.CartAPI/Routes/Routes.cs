@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using GeekShopping.CartAPI.ValueObjects;
 using GeekShopping.CartAPI.Messages;
-using GeekShopping.CartAPI.RabbitMQSender;
+using GeekShopping.CartAPI.MessageSender;
 
 namespace GeekShopping.CartAPI.Routes
 {
@@ -81,7 +81,7 @@ namespace GeekShopping.CartAPI.Routes
                 [FromBody] CheckoutHeaderVO checkoutHeaderVo,
                 [FromServices] ICartRepository cartRepository,
                 [FromServices] ICouponRepository couponRepository,
-                [FromServices] IRabbitMQMessageSender messageSender
+                [FromServices] CartMessageSender messageSender
             ) =>
             {
                 if (checkoutHeaderVo.UserId is null) return Results.BadRequest();

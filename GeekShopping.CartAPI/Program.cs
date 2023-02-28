@@ -7,9 +7,8 @@ using Microsoft.Extensions.Hosting;
 using GeekShopping.CartAPI.Routes;
 using GeekShopping.CartAPI;
 using GeekShopping.CartAPI.Repository;
-using GeekShopping.CartAPI.RabbitMQSender;
 using GeekShopping.IoC.DependencyInjection;
-using GeekShopping.IoC.Utilities;
+using GeekShopping.CartAPI.MessageSender;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +24,7 @@ builder.Services.AddSwaggerConfigs("GeekShopping.CartAPI");
 builder.Services.AddSingleton(MappingConfigurations.RegisterMaps().CreateMapper());
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-builder.Services.AddSingleton<IRabbitMQMessageSender, RabbitMQMessageSender>();
+builder.Services.AddSingleton<CartMessageSender>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<ICouponRepository, CouponRepository>();
 

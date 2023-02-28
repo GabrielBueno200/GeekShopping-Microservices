@@ -1,6 +1,6 @@
 using GeekShopping.IoC.DependencyInjection;
 using GeekShopping.PaymentAPI.MessageConsumer;
-using GeekShopping.PaymentAPI.RabbitMQSender;
+using GeekShopping.PaymentAPI.MessageSender;
 using GeekShopping.PaymentProcessor;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +16,7 @@ builder.Services.AddAuthConfigs(builder.Configuration);
 builder.Services.AddSwaggerConfigs("GeekShopping.PaymentAPI");
 
 builder.Services.AddSingleton<IProcessPayment, ProcessPayment>();
-builder.Services.AddSingleton<IRabbitMQMessageSender, RabbitMQMessageSender>();
+builder.Services.AddSingleton<PaymentMessageSender>();
 builder.Services.AddHostedService<RabbitMQPaymentConsumer>();
 
 var app = builder.Build();
