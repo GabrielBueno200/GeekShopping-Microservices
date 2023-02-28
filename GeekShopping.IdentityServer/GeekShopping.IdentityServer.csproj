@@ -12,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GeekShopping.IoC.DependencyInjection\GeekShopping.IoC.DependencyInjection.csproj" />
+    <ProjectReference Include="..\GeekShopping.IoC.Utilities\GeekShopping.IoC.Utilities.csproj" />
   </ItemGroup>
 </Project>

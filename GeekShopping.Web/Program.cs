@@ -43,14 +43,14 @@ builder.Services.AddAuthentication(options =>
         else
             options.Authority = builder.Configuration["ServicesUrls:IdentityServer"];
         options.GetClaimsFromUserInfoEndpoint = true;
-        options.ClientId = "geek_shopping";
-        options.ClientSecret = "my_super_secret";
-        options.ResponseType = "code";
+        options.ClientId = builder.Configuration["WebAppClientId"];
+        options.ClientSecret = builder.Configuration["ClientSecrets"];
+        options.ResponseType = builder.Configuration["ResponseType"];
         options.ClaimActions.MapJsonKey("role", "role", "role");
         options.ClaimActions.MapJsonKey("sub", "sub", "sub");
         options.TokenValidationParameters.NameClaimType = "name";
         options.TokenValidationParameters.RoleClaimType = "role";
-        options.Scope.Add("geek_shopping");
+        options.Scope.Add(builder.Configuration["ApiScopeName"]);
         options.SaveTokens = true;
     });
 

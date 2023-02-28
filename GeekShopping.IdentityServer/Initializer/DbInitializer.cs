@@ -1,7 +1,7 @@
 using System.Security.Claims;
-using GeekShopping.IdentityServer.Configurations;
 using GeekShopping.IdentityServer.Model;
 using GeekShopping.IdentityServer.Model.Context;
+using GeekShopping.IoC.Utilities.SharedModels;
 using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 
@@ -14,8 +14,8 @@ public class DbInitializer : IDbInitializer
     private readonly RoleManager<IdentityRole> _roleManager;
 
     public DbInitializer(
-        MySQLContext context, 
-        UserManager<ApplicationUser> userManager, 
+        MySQLContext context,
+        UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager
     )
     {
@@ -26,11 +26,11 @@ public class DbInitializer : IDbInitializer
 
     public void Initialize()
     {
-        if (_roleManager.FindByNameAsync(IdentityConfiguration.Admin).Result is not null) 
+        if (_roleManager.FindByNameAsync(Role.Admin).Result is not null)
             return;
 
-        _roleManager.CreateAsync(new IdentityRole(IdentityConfiguration.Admin)).GetAwaiter().GetResult();
-        _roleManager.CreateAsync(new IdentityRole(IdentityConfiguration.Client)).GetAwaiter().GetResult();
+        _roleManager.CreateAsync(new IdentityRole(Role.Admin)).GetAwaiter().GetResult();
+        _roleManager.CreateAsync(new IdentityRole(Role.Client)).GetAwaiter().GetResult();
 
         AddAdmin();
         AddClient();
@@ -38,7 +38,8 @@ public class DbInitializer : IDbInitializer
 
     private void AddAdmin()
     {
-        var admin = new ApplicationUser {
+        var admin = new ApplicationUser
+        {
             UserName = "user-admin",
             Email = "useradmin@admin.com.br",
             EmailConfirmed = true,
@@ -48,18 +49,19 @@ public class DbInitializer : IDbInitializer
         };
 
         _userManager.CreateAsync(admin, "Password@123").GetAwaiter().GetResult();
-        _userManager.AddToRoleAsync(admin, IdentityConfiguration.Admin).GetAwaiter().GetResult();
+        _userManager.AddToRoleAsync(admin, Role.Admin).GetAwaiter().GetResult();
         var adminClaimns = _userManager.AddClaimsAsync(admin, new[]
         {
             new Claim(JwtClaimTypes.Name, $"{admin.FirstName} {admin.LastName}"),
             new Claim(JwtClaimTypes.GivenName, admin.FirstName),
-            new Claim(JwtClaimTypes.Role, IdentityConfiguration.Admin)
+            new Claim(JwtClaimTypes.Role, Role.Admin)
         }).GetAwaiter().GetResult();
     }
 
     private void AddClient()
     {
-        var client = new ApplicationUser {
+        var client = new ApplicationUser
+        {
             UserName = "user-client",
             Email = "userclient@client.com.br",
             EmailConfirmed = true,
@@ -69,12 +71,12 @@ public class DbInitializer : IDbInitializer
         };
 
         _userManager.CreateAsync(client, "Password@123").GetAwaiter().GetResult();
-        _userManager.AddToRoleAsync(client, IdentityConfiguration.Admin).GetAwaiter().GetResult();
+        _userManager.AddToRoleAsync(client, Role.Admin).GetAwaiter().GetResult();
         var adminClaimns = _userManager.AddClaimsAsync(client, new[]
         {
             new Claim(JwtClaimTypes.Name, $"{client.FirstName} {client.LastName}"),
             new Claim(JwtClaimTypes.GivenName, client.FirstName),
-            new Claim(JwtClaimTypes.Role, IdentityConfiguration.Client)
+            new Claim(JwtClaimTypes.Role, Role.Client)
         }).GetAwaiter().GetResult();
     }
 }
