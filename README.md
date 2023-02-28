@@ -73,6 +73,6 @@ docker-compose -f docker-compose.yml -f docker-compose-override.yml up
 
 After these steps, open your browser and access ```http://localhost:5002```
 
-### 2. Running with docker-compose
+### 2. Running locally
 You can run the .NET projects locally setting the environment variable ```ASPNETCORE_ENVIRONMENT``` to "Local".
 
